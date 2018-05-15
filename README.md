@@ -23,9 +23,9 @@ API key and secret is ciphered with a AES using a password.
 
 ## Replacing a DNS record for a domain
 
-   # A record
-   gopapi domain example.com replace-record host A 127.0.0.1
-   # this will change ALL 'A' records for "host" in example.com
+    # A record
+    gopapi domain example.com replace-record host A 127.0.0.1
+    # this will change ALL 'A' records for "host" in example.com
 
 ## Listing records of a domain
 
