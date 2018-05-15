@@ -5,7 +5,7 @@ API key and secret is ciphered with a AES using a password.
 
 # Installation
 
-    pip install gopapi
+    pip2 install gopapi
 
 # Usage
 
@@ -40,7 +40,6 @@ API key and secret is ciphered with a AES using a password.
     gopapi domain mexico.com check
     # or with alias
     gopapi domain mexico.com available
-
 
 
 
