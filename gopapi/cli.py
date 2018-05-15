@@ -37,6 +37,13 @@ class API:
         url = '{}/{}'.format(self.api_url, path)
         return requests.patch(url, headers=headers, **kwargs)
 
+    def put(self, path, **kwargs):
+        headers = {
+            'Authorization': 'sso-key {}:{}'.format(self.key, self.secret),
+            'Content-Type': 'application/json',            
+        }
+        url = '{}/{}'.format(self.api_url, path)
+        return requests.put(url, headers=headers, **kwargs)
 
 def handle_domain(args):
     api = API.shared()
@@ -60,9 +67,9 @@ def handle_domain(args):
         url = 'domains/{}/records'.format(domain)
         params = [
             {
-                'type': args.data[0], # A / CNAME
-                'name': args.data[1], # fulano., mangano.
-                'data': args.data[2], # points to ip/domain
+                'type': args.data[1], # host
+                'name': args.data[2], # dns type
+                'data': args.data[2], # address (ip/name)
             }
         ]
         response = api.patch(url, data=json.dumps(params))
@@ -70,6 +77,25 @@ def handle_domain(args):
         if response.status_code != 200:
             info = response.json()
             print(info['code'], file=sys.stderr)
+            print(info['message'], file=sys.stderr)
+            sys.exit(1)
+
+    elif action == 'replace-record':
+        dns_rtype = args.data[1]
+        url = 'domains/{}/records/{}'.format(domain,dns_rtype) # domain, dns record type
+        params = [
+            {
+                'name': args.data[0], # host
+                'data': args.data[2], # address (ip/name)
+            }
+        ]
+        response = api.put(url, data=json.dumps(params))
+
+        if response.status_code != 200:
+            print(response.status_code)
+            info = response.json()
+            print(info['code'], file=sys.stderr)
+            print(info['message'], file=sys.stderr)
             sys.exit(1)
 
     elif action == 'available' or action == 'check':
@@ -86,15 +112,10 @@ def main():
 
     subparsers = parser.add_subparsers(dest='entity')
     domain_parser = subparsers.add_parser('domain')
-    domain_parser.add_argument('domain', nargs=1,
-                               help=('Domain to be managed. '
-                                     'e.g. mydomain.com')
-                               )
-    domain_parser.add_argument('action', nargs=1,
-                               help='What to do with the domain')
-    domain_parser.add_argument('data', nargs='*')
+    domain_parser.add_argument('domain', nargs=1, help='Domain to be managed, e.g. example.com')
+    domain_parser.add_argument('action', nargs=1, help='Action: one of records, add-record, replace-record')
+    domain_parser.add_argument('data', nargs='*', help='Depends on action, e.g. add-record www A 127.0.0.1')
     domain_parser.add_argument('-t', dest='only_type')
-
     domains_parser = subparsers.add_parser('domains')
 
     api = API.shared()
