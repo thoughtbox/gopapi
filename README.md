@@ -11,15 +11,21 @@ API key and secret is ciphered with a AES using a password.
 
 ## Adding a DNS record to a domain
 
-	# A record
-    gopapi domain yourdomain.com add-record A subdomain 127.0.0.1
+    # A record
+    gopapi domain yourdomain.com add-record subdomain/host A 127.0.0.1
     # Where A can also be CNAME
     # 127.0.0.1 to be replaced with the actual IP
 
     # CNAME
-    gopapi domain yourdomain.com add-record A subdomain 127.0.0.1
+    gopapi domain yourdomain.com add-record host CNAME 127.0.0.1
     # Where A can also be CNAME
     # 127.0.0.1 to be replaced with the actual IP
+
+## Replacing a DNS record for a domain
+
+   # A record
+   gopapi domain example.com replace-record host A 127.0.0.1
+   # this will change ALL 'A' records for "host" in example.com
 
 ## Listing records of a domain
 
